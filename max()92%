@@ -1,0 +1,174 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <vector>
+#include <queue>
+#include <stack>
+#include <cstdlib>
+#include <algorithm>
+#include <cmath>
+#define ll long long
+const ll f = 10, s = 10, t = 10;
+using namespace std;
+void neur();
+int main() {
+#ifdef _DEBUG
+	freopen("input.txt", "r", stdin);
+#endif
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cout << fixed << setprecision(7);
+	neur();
+	return 0;
+}
+vector<double>check;
+ll layers, c[10];
+double w[100][100][100] = { 0 };
+double koeff[100][100] = { 0 };
+
+double ans[1000];
+pair<double, double>in[1000];
+void scan() {
+	for (int i = 0; i < 1000; i++) {
+		cin >> in[i].first >> in[i].second >> ans[i];
+		//ans[i] /= 1000;
+		//in[i].first /= 1000;
+		//in[i].second /= 1000;
+	}
+}
+ll cnt = 0;
+double LF() {
+	ll res;
+	//for (int i = 0; i < c[0]; i++) {
+	res = ans[cnt % 1000];
+	koeff[0][0] = in[cnt % 1000].first;
+	koeff[0][1] = in[cnt % 1000].second;
+	//cnt++;
+	//}
+	for (int lvl = 0; lvl < layers - 1; lvl++) {
+		for (int to = 0; to < c[lvl + 1]; to++) {
+			double sum = 0;
+			for (int from = 0; from < c[lvl]; from++) {
+				sum += w[lvl][from][to] * koeff[lvl][from];
+			}
+
+			//koeff[lvl + 1][to] = sum;
+			//if (koeff[lvl + 1][to] < 0) koeff[lvl + 1][to] *= 0.01;
+
+			koeff[lvl + 1][to] = tanh(sum);
+
+			//koeff[lvl + 1][to] = max(sum, 0.0);
+		}
+	}
+	return abs(res - koeff[layers - 1][0]);
+}
+void study() {
+	double step = 0.001;
+	double fail = 100;
+	while (fail > 0.076) {
+		for (int lvl = 0; lvl < layers - 1; lvl++) {
+			for (int from = 0; from < c[lvl]; from++) {
+				for (int to = 0; to < c[lvl + 1]; to++) {
+					w[lvl][from][to] += step;
+					fail = 0;
+					for (int i = 0; i < 1000; i++) {
+						fail += LF();
+						cnt++;
+					}
+					fail /= 1000;
+					double up = fail;
+					w[lvl][from][to] -= 2 * step;
+					fail = 0;
+					for (int i = 0; i < 1000; i++) {
+						fail += LF();
+						cnt++;
+					}
+					fail /= 1000;
+					double down = fail;
+					if (down > up) {
+						w[lvl][from][to] += 2 * step;
+						fail = up;
+					}
+					else {
+						fail = down;
+					}
+
+					/*
+					for (int i = 0; i < 1000; i++) {
+					fail += LF();
+					cnt++;
+					}
+					fail /= 1000;
+					*/
+
+					cout << 100 - (fail / 1.0 * 100) << '%' << "           " << fail << endl;
+					//fail = 0;
+				}
+			}
+		}
+	}
+}
+
+double tell_answer(double a, double b) {
+	ll res;
+	//for (int i = 0; i < c[0]; i++) {
+	//a /= 1000;
+	//b /= 1000;
+	koeff[0][0] = a;
+	koeff[0][1] = b;
+	//cnt++;
+	//}
+	for (int lvl = 0; lvl < layers - 1; lvl++) {
+		for (int to = 0; to < c[lvl + 1]; to++) {
+			double sum = 0;
+			for (int from = 0; from < c[lvl]; from++) {
+				sum += w[lvl][from][to] * koeff[lvl][from];
+			}
+
+			//koeff[lvl + 1][to] = sum;
+			//if (koeff[lvl + 1][to] < 0) koeff[lvl + 1][to] *= 0.01;
+
+			koeff[lvl + 1][to] = tanh(sum);
+
+			//koeff[lvl + 1][to] = max(sum, 0.0);
+		}
+	}
+	//cout << koeff[layers - 1][0];
+	return koeff[layers - 1][0];
+}
+
+void neur() {
+	srand(9045);
+	cin >> layers;
+	for (int i = 0; i < layers; i++) {
+		cin >> c[i];
+	}
+	for (int lvl = 0; lvl < layers - 1; lvl++) {
+		for (int from = 0; from < c[lvl]; from++) {
+			for (int to = 0; to < c[lvl + 1]; to++) {
+				//cin >> w[lvl][from][to];
+				w[lvl][from][to] = 0.05;//rand() % 1000;;
+										//cout << lvl << ' ' << from << " : " << to << endl;
+			}
+		}
+	}
+	scan();
+	/*double fail = 0;
+	for (int i = 0; i < 4; i++) {
+	fail += LF();
+	cnt++;
+	}
+	fail /= 4;
+	cout << fail;*/
+	study();
+	for (int i = 0; i < 1000; i++) {
+		double a, b;
+		cin >> a >> b;
+		cout << a << ' ' << b << ' ' << tell_answer(a, b) << "     " << endl;
+	}
+	return;
+}
