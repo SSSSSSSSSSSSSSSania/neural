@@ -69,7 +69,7 @@ double LF() {
 void study() {
 	double step = 0.001;
 	double fail = 100;
-	while (fail > 0.076) {
+	while (fail > 0.00011) {
 		for (int lvl = 0; lvl < layers - 1; lvl++) {
 			for (int from = 0; from < c[lvl]; from++) {
 				for (int to = 0; to < c[lvl + 1]; to++) {
@@ -151,7 +151,7 @@ void neur() {
 		for (int from = 0; from < c[lvl]; from++) {
 			for (int to = 0; to < c[lvl + 1]; to++) {
 				//cin >> w[lvl][from][to];
-				w[lvl][from][to] = 0.05;//rand() % 1000;;
+				w[lvl][from][to] = 0.05;//rand() % 11 - 10;
 										//cout << lvl << ' ' << from << " : " << to << endl;
 			}
 		}
