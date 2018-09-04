@@ -10,14 +10,13 @@
 #include <cstdlib>
 #include <algorithm>
 #include <cmath>
+#include <string>
 #define ll long long
 const ll f = 10, s = 10, t = 10;
 using namespace std;
 void neur();
 int main() {
-#ifdef _DEBUG
-	freopen("input.txt", "r", stdin);
-#endif
+	ifstream fin("input.txt");
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
 	cout.tie(0);
@@ -33,12 +32,14 @@ double koeff[100][100] = { 0 };
 double ans[1000];
 pair<double, double>in[1000];
 void scan() {
+	ifstream fin("data.txt");
 	for (int i = 0; i < 1000; i++) {
-		cin >> in[i].first >> in[i].second >> ans[i];
+		fin >> in[i].first >> in[i].second >> ans[i];
 		//ans[i] /= 1000;
 		//in[i].first /= 1000;
 		//in[i].second /= 1000;
 	}
+	fin.close();
 }
 ll cnt = 0;
 double LF() {
@@ -67,9 +68,9 @@ double LF() {
 	return abs(res - koeff[layers - 1][0]);
 }
 void study() {
-	double step = 0.001;
+	double step = 0.01;
 	double fail = 100;
-	while (fail > 0.00011) {
+	while (fail > 0.1) {
 		for (int lvl = 0; lvl < layers - 1; lvl++) {
 			for (int from = 0; from < c[lvl]; from++) {
 				for (int to = 0; to < c[lvl + 1]; to++) {
@@ -112,7 +113,37 @@ void study() {
 		}
 	}
 }
-
+void setWeight() {
+	ifstream fin("weight.txt");
+	string s;
+	cout << endl << "     neural network trained?(enter Y or N)" << endl;
+	cin >> s;
+	if (s == "N" || s == "n") {
+		//freopen("input.txt", "r", stdin);
+		for (int lvl = 0; lvl < layers - 1; lvl++) {
+			for (int from = 0; from < c[lvl]; from++) {
+				for (int to = 0; to < c[lvl + 1]; to++) {
+					//cin >> w[lvl][from][to];
+					w[lvl][from][to] = 0.05;//rand() % 11 - 10;
+				}
+			}
+		}
+		scan();
+		study();
+	}
+	else if (s == "Y" || s == "y") {
+		for (int lvl = 0; lvl < layers - 1; lvl++) {
+			for (int from = 0; from < c[lvl]; from++) {
+				for (int to = 0; to < c[lvl + 1]; to++) {
+					fin >> w[lvl][from][to];
+					//w[lvl][from][to] = 0.05;//rand() % 11 - 10;
+				}
+			}
+		}
+	}
+	cout << endl << "READY!" << endl;
+	fin.close();
+}
 double tell_answer(double a, double b) {
 	ll res;
 	//for (int i = 0; i < c[0]; i++) {
@@ -142,33 +173,32 @@ double tell_answer(double a, double b) {
 }
 
 void neur() {
+	ifstream fin("input.txt");
 	srand(9045);
-	cin >> layers;
+	fin >> layers;
 	for (int i = 0; i < layers; i++) {
-		cin >> c[i];
+		fin >> c[i];
 	}
-	for (int lvl = 0; lvl < layers - 1; lvl++) {
-		for (int from = 0; from < c[lvl]; from++) {
-			for (int to = 0; to < c[lvl + 1]; to++) {
-				//cin >> w[lvl][from][to];
-				w[lvl][from][to] = 0.05;//rand() % 11 - 10;
-										//cout << lvl << ' ' << from << " : " << to << endl;
-			}
+	setWeight();
+	double a = 0, b = 0;
+	while (a != -1 && b != -1) {
+		cout << endl << "ENTER A B:   " << endl;
+		cin >> a >> b;
+		double a1 = a / 1000;
+		double b1 = b / 1000;
+		//cout << (int)(tell_answer(a, b) * 1000) << endl;
+		if ((int)(tell_answer(a, b) * 1000) == 0) {
+			cout << a << " < " << b << endl;
+		}
+		else {
+			cout << a << " > " << b << endl;
 		}
 	}
-	scan();
-	/*double fail = 0;
-	for (int i = 0; i < 4; i++) {
-	fail += LF();
-	cnt++;
-	}
-	fail /= 4;
-	cout << fail;*/
-	study();
-	for (int i = 0; i < 1000; i++) {
+	fin.close();
+	/*for (int i = 0; i < 1000; i++) {
 		double a, b;
 		cin >> a >> b;
 		cout << a << ' ' << b << ' ' << tell_answer(a, b) << "     " << endl;
-	}
+	}*/
 	return;
 }
