@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <conio.h>
 #include "cerebrity.cpp"
 #define ll long long
 using namespace std;
@@ -68,22 +69,23 @@ void test() {
 	}
 
 	cout << "ENTER EDUCATION COEFFICIENT AND STEP" << endl;
-	cin >> coeff >> step;
+	fin1 >> coeff >> step;
 	q.study(coeff, step);
 
 	double first = 0, second = 0;
 	while (first != -1 && second != -1) {
-		cout << "ENTER A B" << endl;
+		//cout << "ENTER A B" << endl;
 		cin >> first >> second;
-		/*if ((int)(q.tell_answer(first, second) * 1000) == 0) {
-			cout << first << " < " << second << endl << endl;
-		}
-		if()
-		else {
-			cout << first << " > " << second << endl << endl;
-		}*/
 		cout << q.tell_answer(first, second) << endl;
-		//cout << q.tell_answer(first, second) << endl;
+		if (q.tell_answer(first, second) < -0.5) {
+			cout << first << " == " << second << endl << endl;
+			continue;
+		}
+		if (q.tell_answer(first, second) > 1 - 0.5) {
+			cout << first << " > " << second << endl << endl;
+			continue;
+		}
+		cout << first << " < " << second << endl << endl;
 	}
 
 	fin1.close();

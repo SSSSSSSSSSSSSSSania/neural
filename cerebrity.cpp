@@ -19,8 +19,8 @@ struct Cerebral {
 	vector<ll>c;
 	double w[100][100][100];
 	double koeff[100][100];
-	double ans[2000];
-	pair<double, double>in[2000];
+	double ans[3000];
+	pair<double, double>in[3000];
 	ll cnt;
 	ll dataSize;
 
@@ -113,21 +113,30 @@ struct Cerebral {
 							fail = down;
 						}
 						cout << endl << 100 - (fail / 1.0 * 100) << '%' << "           " << fail << endl;
-						for (int lvl = 0; lvl < layers - 1; lvl++) {
+						/*for (int lvl = 0; lvl < layers - 1; lvl++) {
 							for (int from = 0; from < c[lvl]; from++) {
 								for (int to = 0; to < c[lvl + 1]; to++) {
 									cout << w[lvl][from][to] << ' ';
 								}
 							}
-						}
+						}*/
 					}
 				}
 			}
 		}
 		cout << "READY!" << endl;
 	}
-
+	ll powTen(double f) {
+		ll res = 0;
+		while (f > 1) {
+			f /= 10;
+			res++;
+		}
+		return res;
+	}
 	double tell_answer(double a, double b) {
+		a /= pow(10, powTen(a));
+		b /= pow(10, powTen(b));
 		ll res;
 		koeff[0][0] = a;
 		koeff[0][1] = b;
